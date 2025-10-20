@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { login, sendOtp } from '../auth/mockApi.js';
-import { validateEmail, validatePassword } from '../auth/validators.js';
-import { useAuth } from '../auth/AuthContext.jsx';
+import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../auth/AuthContext';
+import {
+  validateEmail,
+  validatePassword,
+  getPasswordError,
+} from '../auth/validators';
+import { login } from '../auth/MockApi';
 
 export default function Login() {
+  const { beginLogin } = useAuth();
   const nav = useNavigate();
-  const { setTempLoginToken } = useAuth();
   const [email, setEmail] = useState('');
   const [pw, setPw] = useState('');
   const [error, setError] = useState('');
@@ -14,19 +18,21 @@ export default function Login() {
 
   async function onSubmit(e) {
     e.preventDefault();
-
     setError('');
-    if (!validateEmail(email)) return setError('Enter a valid email.');
-    if (!validatePassword(pw)) return setError('Password must be 8+ chars and include a number.');
+
+    if (!validateEmail(email)) return setError('Enter a valid email address.');
+    if (!validatePassword(pw)) return setError(getPasswordError(pw));
 
     setLoading(true);
     try {
       const { tempLoginToken } = await login(email, pw);
-      await sendOtp(tempLoginToken);
-      setTempLoginToken(tempLoginToken);
+
+      beginLogin({ email }, tempLoginToken);
       nav('/mfa');
     } catch (err) {
-      setError(err.message || 'Login failed');
+      setError(err?.message || 'Login failed');
+      setEmail('');
+      setPw('');
     } finally {
       setLoading(false);
     }
@@ -35,40 +41,45 @@ export default function Login() {
   return (
     <div className='container'>
       <h1>Login</h1>
-      <form onSubmit={onSubmit}>
+      <form onSubmit={onSubmit} noValidate>
         <label htmlFor='email'>Email</label>
         <input
           id='email'
-          aria-label='Email'
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder='address@domain.com'
+          type='email'
+          autoComplete='email'
+          required
         />
+
         <label htmlFor='pw'>Password</label>
         <input
           id='pw'
-          aria-label='Password'
           value={pw}
           onChange={(e) => setPw(e.target.value)}
           type='password'
           placeholder='••••••••'
+          autoComplete='current-password'
+          required
         />
+
         {error && (
-          <div role='alert' className='error'>
+          <div className='error' role='alert' aria-live='assertive'>
             {error}
           </div>
         )}
-        <div className='actions'>
-          <button disabled={loading}>
-            {loading ? 'Signing in…' : 'Sign in'}
-          </button>
-          <Link className='link' to='/signup'>
-            Create account
-          </Link>
-        </div>
+
+        <button type='submit' disabled={loading}>
+          {loading ? 'Logging in…' : 'Login'}
+        </button>
       </form>
-      <p className='note' style={{ marginTop: 12 }}>
-        Demo: reader@demo.com / writer@demo.com (Password1!)
+
+      <p style={{ marginTop: 16, textAlign: 'center' }}>
+        Don’t have an account?{' '}
+        <Link to='/signup' style={{ textDecoration: 'underline' }}>
+          Sign up
+        </Link>
       </p>
     </div>
   );

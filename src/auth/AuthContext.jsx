@@ -7,34 +7,43 @@ import React, {
 } from 'react';
 
 const AuthContext = createContext(null);
-const LS_KEY = 'session';
+const SESSION_KEY = 'auth_session_v2';
 
 export function AuthProvider({ children }) {
   const [state, setState] = useState({
-    user: null, // { id, email, role }
-    accessToken: null, // set after MFA success
-    tempLoginToken: null, // set after password login before MFA
+    user: null, 
+    accessToken: null, 
+    tempLoginToken: null,
   });
 
   useEffect(() => {
     try {
-      const saved = localStorage.getItem(LS_KEY);
+      const saved = sessionStorage.getItem(SESSION_KEY);
       if (saved) setState(JSON.parse(saved));
     } catch {}
   }, []);
 
   useEffect(() => {
-    localStorage.setItem(LS_KEY, JSON.stringify(state));
+    try {
+      sessionStorage.setItem(SESSION_KEY, JSON.stringify(state));
+    } catch {}
   }, [state]);
+
+  const beginLogin = (user, tempLoginToken) =>
+    setState({ user, tempLoginToken, accessToken: null });
+
+  const finalizeMfa = (accessToken) =>
+    setState((s) => ({ ...s, accessToken, tempLoginToken: null }));
+
+  const signOut = () =>
+    setState({ user: null, accessToken: null, tempLoginToken: null });
 
   const value = useMemo(
     () => ({
       ...state,
-      setTempLoginToken: (t) => setState((s) => ({ ...s, tempLoginToken: t })),
-      signIn: (user, accessToken) =>
-        setState({ user, accessToken, tempLoginToken: null }),
-      signOut: () =>
-        setState({ user: null, accessToken: null, tempLoginToken: null }),
+      beginLogin,
+      finalizeMfa,
+      signOut,
     }),
     [state]
   );
