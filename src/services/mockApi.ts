@@ -18,7 +18,7 @@ type MfaChallenge = {
   otp: string
 }
 
-// Simple "hash" (DO NOT use in real apps)
+
 function hash(pw: string) {
   let h = 0
   for (let i = 0; i < pw.length; i++) h = (h * 31 + pw.charCodeAt(i)) | 0
@@ -48,7 +48,7 @@ export async function signup(email: string, password: string, role: Role = 'read
   }
   db[key] = { email: key, passwordHash: hash(password), role }
   saveUsers(db)
-  // Simulate email verification success and direct to login
+
   return { ok: true }
 }
 
@@ -68,11 +68,11 @@ export async function login(email: string, password: string) {
     throw err
   }
 
-  // Create MFA challenge
+
   const challenge: MfaChallenge = {
     email: key,
     mfaToken: cryptoToken(),
-    otp: '123456' // deterministic for demo & tests
+    otp: '123456' 
   }
   sessionStorage.setItem(STORAGE_MFA, JSON.stringify(challenge))
   return { requiresMfa: true, mfaToken: challenge.mfaToken }
@@ -93,7 +93,7 @@ export async function verifyMfa(code: string) {
     throw err
   }
 
-  // Establish a "session"
+
   const db = loadUsers()
   const rec = db[challenge.email]
   const session = { email: rec.email, role: rec.role, token: cryptoToken() }

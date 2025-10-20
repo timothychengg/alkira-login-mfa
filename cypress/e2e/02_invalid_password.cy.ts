@@ -3,7 +3,7 @@ describe('Invalid password shows errors', () => {
   const password = 'Password1'
 
   it('blocks login with wrong password', () => {
-    // Create user via UI
+ 
     cy.visit('/signup')
     cy.get('input[name="email"]').type(email)
     cy.get('input[name="password"]').type(password)

@@ -14,7 +14,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    // If redirected from signup, prefill email
+    
     const st = (loc.state as any)?.prefillEmail
     if (st) setEmail(st)
   }, [loc.state])

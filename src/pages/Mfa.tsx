@@ -14,7 +14,7 @@ export default function Mfa() {
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    // Automatically focus on mount
+    
     inputRef.current?.focus();
   }, []);
 
@@ -64,7 +64,7 @@ export default function Mfa() {
             value={otp}
             onChange={(e) => setOtp(e.target.value.replace(/[^0-9]/g, ''))}
             onKeyDown={(e) => {
-              // Press Enter to verify immediately
+             
               if (e.key === 'Enter') handleSubmit(e);
             }}
           />
