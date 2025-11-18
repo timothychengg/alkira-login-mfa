@@ -36,28 +36,66 @@ export default function LoginPage() {
     setLoading(false);
   }
   return (
-    <div>
-      <h1>Login</h1>
-      {error && <div style={{ color: 'red' }}>{error}</div>}
-      <form onSubmit={handleSubmit}>
-        <input
-          type='email'
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        ></input>
-        <input
-          type='password'
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        ></input>
+    <div className='center-layout'>
+      <div className='hero-pane'>
+        <div className='auth-card'>
+          <div className='card-accent' />
+          <div className='card-header'>
+            <p className='eyebrow'>Alkira secure edge</p>
+            <h1>Welcome back</h1>
+            <p className='subtitle'>
+              Sign in to manage your Alkira network fabric and MFA policies.
+            </p>
+          </div>
 
-        <button type='submit' disabled={loading}>
-          {loading ? 'Logging in...' : 'Login'}
-        </button>
-      </form>
-      <p>
-        No Account? <Link to='/signup'>Sign up</Link>
-      </p>
+          {error && <div className='alert error'>{error}</div>}
+
+          <form className='form-stack' onSubmit={handleSubmit}>
+            <input
+              className='input-field'
+              type='email'
+              value={email}
+              placeholder='Work email'
+              autoComplete='email'
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <input
+              className='input-field'
+              type='password'
+              value={password}
+              placeholder='Password'
+              autoComplete='current-password'
+              onChange={(e) => setPassword(e.target.value)}
+            />
+
+            <button className='primary-btn' type='submit' disabled={loading}>
+              {loading ? 'Logging in...' : 'Continue to MFA'}
+            </button>
+          </form>
+
+          <p className='helper-text'>
+            No account yet? <Link to='/signup'>Create an Alkira identity</Link>.
+          </p>
+        </div>
+
+        <div className='info-card'>
+          <div className='card-accent' />
+          <div className='card-header'>
+            <p className='eyebrow'>Session safeguards</p>
+            <h2>What to expect</h2>
+            <p className='subtitle'>
+              MFA is required for every login to mirror Alkira production security
+              posture.
+            </p>
+          </div>
+          <ul className='list-muted'>
+            <li>Use your demo credentials to authenticate.</li>
+            <li>We’ll route you to MFA verification immediately after login.</li>
+            <li>Roles are honored in the dashboard to show RBAC differences.</li>
+          </ul>
+          <div className='code-pill'>MFA demo code: 123456</div>
+        </div>
+      </div>
     </div>
   );
 }
