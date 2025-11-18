@@ -10,20 +10,20 @@ export default function Login() {
   const { signIn } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [errors, setErrors] = useState<{email?: string, password?: string, form?: string}>({})
+  const [errors, setErrors] = useState({})
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     // If redirected from signup, prefill email
-    const st = (loc.state as any)?.prefillEmail
+    const st = loc.state?.prefillEmail
     if (st) setEmail(st)
   }, [loc.state])
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e) {
     e.preventDefault()
     const res = emailSchema.safeParse(email)
     const pw = passwordSchema.safeParse(password)
-    const newErrors: typeof errors = {}
+    const newErrors = {}
     if (!res.success) newErrors.email = res.error.issues[0].message
     if (!pw.success) newErrors.password = pw.error.issues[0].message
     setErrors(newErrors)
@@ -35,9 +35,9 @@ export default function Login() {
       if (r.requiresMfa) {
         nav('/mfa', { state: { from: loc.state?.from } })
       } else {
-        nav((loc.state as any)?.from?.pathname ?? '/app')
+        nav(loc.state?.from?.pathname ?? '/app')
       }
-    } catch (err: any) {
+    } catch (err) {
       setErrors({ form: err.message || 'Login failed' })
     } finally {
       setLoading(false)

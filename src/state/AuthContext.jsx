@@ -1,21 +1,10 @@
-import React, { createContext, useContext, useEffect, useMemo, useState } from 'react'
+import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import * as api from '../services/mockApi'
 
-type User = { email: string; role: api.Role } | null
+const AuthCtx = createContext(null)
 
-type Ctx = {
-  user: User
-  isAuthenticated: boolean
-  signUp: (email: string, password: string, role?: api.Role) => Promise<void>
-  signIn: (email: string, password: string) => Promise<{ requiresMfa: boolean }>
-  verifyMfaCode: (code: string) => Promise<void>
-  signOut: () => Promise<void>
-}
-
-const AuthCtx = createContext<Ctx | null>(null)
-
-export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User>(null)
+export function AuthProvider({ children }) {
+  const [user, setUser] = useState(null)
   const [booted, setBooted] = useState(false)
 
   useEffect(() => {
@@ -26,7 +15,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     })()
   }, [])
 
-  const value = useMemo<Ctx>(() => ({
+  const value = useMemo(() => ({
     user,
     isAuthenticated: !!user,
     signUp: async (email, password, role) => {

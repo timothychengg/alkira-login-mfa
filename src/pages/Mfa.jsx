@@ -1,38 +1,37 @@
-import { useEffect, useRef, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import TextField from '../components/TextField';
-import { otpSchema } from '../utils/validators';
-import { useAuth } from '../state/AuthContext';
+import { useEffect, useRef, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { otpSchema } from '../utils/validators'
+import { useAuth } from '../state/AuthContext'
 
 export default function Mfa() {
-  const nav = useNavigate();
-  const { state } = useLocation();
-  const { verifyMfaCode } = useAuth();
-  const [otp, setOtp] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const nav = useNavigate()
+  const { state } = useLocation()
+  const { verifyMfaCode } = useAuth()
+  const [otp, setOtp] = useState('')
+  const [error, setError] = useState(null)
+  const [loading, setLoading] = useState(false)
+  const inputRef = useRef(null)
 
   useEffect(() => {
     // Automatically focus on mount
-    inputRef.current?.focus();
-  }, []);
+    inputRef.current?.focus()
+  }, [])
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    const res = otpSchema.safeParse(otp);
+  async function handleSubmit(e) {
+    e.preventDefault()
+    const res = otpSchema.safeParse(otp)
     if (!res.success) {
-      setError(res.error.issues[0].message);
-      return;
+      setError(res.error.issues[0].message)
+      return
     }
     try {
-      setLoading(true);
-      await verifyMfaCode(otp);
-      nav((state as any)?.from?.pathname ?? '/app');
-    } catch (err: any) {
-      setError(err.message || 'Invalid code');
+      setLoading(true)
+      await verifyMfaCode(otp)
+      nav(state?.from?.pathname ?? '/app')
+    } catch (err) {
+      setError(err.message || 'Invalid code')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
   }
 

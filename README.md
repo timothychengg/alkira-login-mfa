@@ -1,4 +1,4 @@
-# Alkira Login + MFA – React + Vite + TypeScript
+# Alkira Login + MFA – React + Vite + JavaScript
 
 A professional, self-contained demo implementing:
 
@@ -13,7 +13,7 @@ A professional, self-contained demo implementing:
 > **Note**: This project uses a local in-browser mock API with deterministic OTP `123456` to keep the demo and tests simple and stable.
 
 ## Tech Stack
-- React 18 + TypeScript + Vite
+- React 18 + JavaScript + Vite
 - React Router v6
 - Tailwind CSS
 - Cypress for E2E tests

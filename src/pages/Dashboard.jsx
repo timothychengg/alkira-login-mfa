@@ -3,7 +3,7 @@ import { useAuth } from '../state/AuthContext'
 
 export default function Dashboard() {
   const { user } = useAuth()
-  const [notes, setNotes] = useState<string[]>(['First note'])
+  const [notes, setNotes] = useState(['First note'])
   const [input, setInput] = useState('')
 
   const canEdit = user?.role === 'readWrite'

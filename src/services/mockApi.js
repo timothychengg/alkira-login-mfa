@@ -5,21 +5,8 @@
  * - Deterministic OTP '123456' to make Cypress tests stable.
  */
 
-export type Role = 'readOnly' | 'readWrite'
-export type UserRecord = {
-  email: string
-  passwordHash: string
-  role: Role
-}
-
-type MfaChallenge = {
-  email: string
-  mfaToken: string
-  otp: string
-}
-
 // Simple "hash" (DO NOT use in real apps)
-function hash(pw: string) {
+function hash(pw) {
   let h = 0
   for (let i = 0; i < pw.length; i++) h = (h * 31 + pw.charCodeAt(i)) | 0
   return 'h' + Math.abs(h)
@@ -29,20 +16,20 @@ const STORAGE_USERS = 'demo.users.v1'
 const STORAGE_SESS = 'demo.session.v1'
 const STORAGE_MFA = 'demo.mfa.v1'
 
-function loadUsers(): Record<string, UserRecord> {
+function loadUsers() {
   const raw = localStorage.getItem(STORAGE_USERS)
   return raw ? JSON.parse(raw) : {}
 }
-function saveUsers(db: Record<string, UserRecord>) {
+function saveUsers(db) {
   localStorage.setItem(STORAGE_USERS, JSON.stringify(db))
 }
 
-export async function signup(email: string, password: string, role: Role = 'readOnly') {
+export async function signup(email, password, role = 'readOnly') {
   await sleep(300)
   const db = loadUsers()
   const key = email.toLowerCase()
   if (db[key]) {
-    const err: any = new Error('User already exists')
+    const err = new Error('User already exists')
     err.code = 'USER_EXISTS'
     throw err
   }
@@ -52,24 +39,24 @@ export async function signup(email: string, password: string, role: Role = 'read
   return { ok: true }
 }
 
-export async function login(email: string, password: string) {
+export async function login(email, password) {
   await sleep(400)
   const db = loadUsers()
   const key = email.toLowerCase()
   const rec = db[key]
   if (!rec) {
-    const err: any = new Error('Invalid credentials')
+    const err = new Error('Invalid credentials')
     err.code = 'NO_USER'
     throw err
   }
   if (rec.passwordHash !== hash(password)) {
-    const err: any = new Error('Invalid credentials')
+    const err = new Error('Invalid credentials')
     err.code = 'BAD_PW'
     throw err
   }
 
   // Create MFA challenge
-  const challenge: MfaChallenge = {
+  const challenge = {
     email: key,
     mfaToken: cryptoToken(),
     otp: '123456' // deterministic for demo & tests
@@ -78,17 +65,17 @@ export async function login(email: string, password: string) {
   return { requiresMfa: true, mfaToken: challenge.mfaToken }
 }
 
-export async function verifyMfa(code: string) {
+export async function verifyMfa(code) {
   await sleep(300)
   const raw = sessionStorage.getItem(STORAGE_MFA)
   if (!raw) {
-    const err: any = new Error('MFA challenge not found or expired')
+    const err = new Error('MFA challenge not found or expired')
     err.code = 'NO_CHALLENGE'
     throw err
   }
-  const challenge: MfaChallenge = JSON.parse(raw)
+  const challenge = JSON.parse(raw)
   if (code !== challenge.otp) {
-    const err: any = new Error('Incorrect code')
+    const err = new Error('Incorrect code')
     err.code = 'BAD_OTP'
     throw err
   }
@@ -116,6 +103,6 @@ export async function signout() {
 function cryptoToken() {
   return Math.random().toString(36).slice(2) + Date.now().toString(36)
 }
-function sleep(ms: number) {
+function sleep(ms) {
   return new Promise(res => setTimeout(res, ms))
 }

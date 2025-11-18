@@ -9,15 +9,15 @@ export default function Signup() {
   const nav = useNavigate()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [role, setRole] = useState<'readOnly'|'readWrite'>('readOnly')
-  const [errors, setErrors] = useState<{email?: string, password?: string, form?: string}>({})
+  const [role, setRole] = useState('readOnly')
+  const [errors, setErrors] = useState({})
   const [loading, setLoading] = useState(false)
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e) {
     e.preventDefault()
     const res = emailSchema.safeParse(email)
     const pw = passwordSchema.safeParse(password)
-    const newErrors: typeof errors = {}
+    const newErrors = {}
     if (!res.success) newErrors.email = res.error.issues[0].message
     if (!pw.success) newErrors.password = pw.error.issues[0].message
     setErrors(newErrors)
@@ -27,7 +27,7 @@ export default function Signup() {
       setLoading(true)
       await signUp(email, password, role)
       nav('/login', { state: { prefillEmail: email } })
-    } catch (err: any) {
+    } catch (err) {
       setErrors({ form: err.message || 'Sign up failed' })
     } finally {
       setLoading(false)
